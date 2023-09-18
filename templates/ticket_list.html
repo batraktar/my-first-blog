@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        {% for ticket in tickets %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ ticket.hall.name }}</h5>
+                        <p class="card-text">Movie: {{ ticket.session.name }}</p>
+                        <p class="card-text">Time: {{ ticket.session.start_time }}/{{ ticket.session.end_time }}</p>
+                        <p class="card-text">Quantity: {{ ticket.quantity }}</p>
+                        <p class="card-text">Total_price: {{ ticket.total_price }}</p>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col">
+                <p>No tickets found.</p>
+            </div>
+        {% endfor %}
+    </div>
+    <p class="btn btn-danger">Total amount spent: ${{ total_spent|floatformat:2 }}</p>
+
+{% endblock %}

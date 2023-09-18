@@ -1,0 +1,112 @@
+<h2 class="mt-4">Sessions list</h2>
+
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+        Dropdown
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <button class="dropdown-item" type="button"><a href="?sort_by=start_time">Сортувати за часом</a></button>
+        <button class="dropdown-item" type="button"><a href="?sort_by=ticket_price">Сортувати за ціною</a></button>
+    </div>
+</div>
+
+<a href="?sort_by=start_time">Сортувати за часом</a>
+<a href="?sort_by=ticket_price">Сортувати за ціною</a>
+
+
+<div class="row">
+    {% for moviesession in object_list %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    {% if user.is_authenticated and user.is_staff %}
+                        <h4 class="card-title"><a href="{% url 'edit_session' slug=moviesession.slug %}"
+                                                  class="btn btn-danger">{{ moviesession.name }}</a></h4>
+                    {% elif user.is_authenticated %}
+                        <h4 class="card-title"><a href="{% url 'movie_session' slug=moviesession.slug %}"
+                                                  class="btn btn-danger">{{ moviesession.name }}</a></h4>
+                    {% else %}
+                        <h4 class="card-title">{{ moviesession.name }}  </h4>
+                    {% endif %}
+                    {% if user.is_authenticated and user.is_staff %}
+                        <p class="card-text"><a
+                                href="{% url 'edit_hall' moviesession.hall.pk %}">{{ moviesession.hall.name }}</a>
+                        </p>
+                    {% else %}
+                        <p class="card-text">Hall: {{ moviesession.hall.name }}</p>
+                    {% endif %}
+                    <p class="card-text">Time: {{ moviesession.start_time }}/{{ moviesession.end_time }}</p>
+                    <p class="card-text">Rental
+                        period: {{ moviesession.cob_show_time|date:'d.m.y' }}/{{ moviesession.ended_show_time|date:'d.m.y' }}</p>
+                    <p class="card-text">Available seats: {{ moviesession.available_seats }}</p>
+                    <p class="card-text">Price: {{ moviesession.ticket_price }} $</p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{#<table class="table table-striped mt-3">#}
+{#    <thead>#}
+{#    <tr>#}
+{#        <th>Movie</th>#}
+{#        <th>Session Time. Start/End</th>#}
+{#        <th>Rental Period</th>#}
+{#        <th>Hall</th>#}
+{#        <th>Price</th>#}
+{#        <th>Seats available</th>#}
+{#    </tr>#}
+{#    </thead>#}
+{#    <tbody>#}
+{#    {% for moviesession in object_list %}#}
+{#        <tr>#}
+{#            {% if user.is_authenticated and user.is_staff %}#}
+{#                <td><a href="{% url 'edit_session' moviesession.pk %}"#}
+{#                       class="btn btn-primary">{{ moviesession.name }}</a></td>#}
+{#            {% elif user.is_authenticated %}#}
+{#                <td><a href="{% url 'movie_session' moviesession.pk %}">{{ moviesession.name }}</a></td>#}
+{#            {% else %}#}
+{#                <td>{{ moviesession.name }}</td>#}
+{#            {% endif %}#}
+{#            <td>{{ moviesession.start_time }}/{{ moviesession.end_time }}</td>#}
+{#            <td>{{ moviesession.cob_show_time|date:'d.m.y' }}/{{ moviesession.ended_show_time|date:'d.m.y' }}</td>#}
+{#            {% if user.is_authenticated and user.is_staff %}#}
+{#                <td><a href="{% url 'edit_hall' moviesession.hall.pk %}">{{ moviesession.hall.name }}</a></td>#}
+{#            {% else %}#}
+{#                <td>{{ moviesession.hall.name }}</td>#}
+{#            {% endif %}#}
+{#            <td>{{ moviesession.ticket_price }} $</td>#}
+{#            <td>{{ moviesession.available_seats }}</td>#}
+{#        </tr>#}
+{#    {% endfor %}#}
+{#    </tbody>#}
+{#</table>#}
+<div class="pagination">
+<span class="step-links">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary">previous</a>
+    {% endif %}
+    <span class="current">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary">next</a>
+    {% endif %}
+</span>
+</div>
+<h2>Сеансы на сегодня</h2>
+<ul>
+    {% for session in today_sessions %}
+        <li>{{ session.start_time }} - {{ session.end_time }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Сеанси на завтра</h2>
+<ul>
+    {% for session in sessions_tomorrow %}
+        <li>
+            {{ session.movie }} - {{ session.start_time }} - {{ session.available_seats }} місць
+            <a href="{% url 'buy_ticket' session.pk %}">Купити квиток</a>
+        </li>
+    {% endfor %}
+</ul>

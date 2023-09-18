@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="d-flex align-items-start mb-3" style="margin-top: 15px; margin-left: 45px;">
+        <div class="card-body" style="margin-left: 45px;">
+            <h5 class="card-title">{{ moviesession.name }}</h5>
+            <p class="card-text">Session time: start/end{{ moviesession.start_time }}/{{ moviesession.end_time }}</p>
+            <p class="card-text">Price: {{ moviesession.ticket_price }} $</p>
+            <p class="card-text">Hall: {{ moviesession.hall.name }}</p>
+            <p class="card-text">Seats available: {{ moviesession.hall.size }}</p>
+            <p class="card-text"><small class="text-body-secondary">Rental
+                Period: {{ moviesession.cob_show_time|date:'d.m.y' }}/{{ moviesession.ended_show_time|date:'d.m.y' }} </small>
+            </p>
+        </div>
+        <form method="post" action="{% url 'ticket_purchase' pk=moviesession.pk %}">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit" class="btn btn-primary">Buy</button>
+        </form>
+{% endblock %}
